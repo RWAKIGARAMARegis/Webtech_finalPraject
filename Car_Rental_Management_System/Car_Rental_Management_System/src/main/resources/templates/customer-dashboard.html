@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CUSTOMER DASHBOARD</title>
+    <link href="css/styles1.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Your custom body styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        /*Header and Footer Styles */
+        .header-container {
+            background-color: #292828; /* Grey color */
+            color: #fff; /* Text color */
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-footer {
+            background-color: #292828; /* Grey color */
+            color: #fff; /* Text color */
+            display: flex;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 0px;
+        }
+
+        /* Rest of your CSS for car cards, buttons, etc. */
+        .car-card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .car-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            background-color: #0056b3;
+            color: #fff;
+            border: 1px solid #0056b3;
+        }
+
+        .book-btn:hover {
+            background-color: #004080;
+        }
+
+        .car-details p {
+            margin-bottom: 5px;
+        }
+
+        .stars {
+            unicode-bidi: bidi-override;
+            color: #0056b3;
+            font-size: 20px;
+            padding-top: 5px;
+        }
+
+        .stars span {
+            padding-right: 2px;
+        }
+
+        /* Search form */
+        .search-form {
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            border-radius: 20px !important;
+        }
+
+        .search-form button {
+            border-radius: 20px !important;
+        }
+        /*.card {*/
+        /*    height: 400px; !* Set a fixed height for the card *!*/
+        /*}*/
+
+        /*.card-body {*/
+        /*    height: 100%;*/
+        /*    display: flex;*/
+        /*    flex-direction: column;*/
+        /*    justify-content: space-between;*/
+        /*}*/
+
+        /* Interactive rating stars */
+        .rating {
+            display: flex;
+            justify-content: center;
+        }
+
+        .rating span {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .rating span:hover,
+        .rating span:hover ~ span {
+            color: orange;
+        }
+
+        .rating span.active {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <!-- Your header content -->
+    <div class="header-container">
+        <div class="logo">
+            <img src="/images/logo2.PNG">
+        </div>
+        <nav class="nav-links">
+            <ul>
+                <li><a th:href="@{/index}">Home</a></li>
+                <li><a th:href="@{/about}">About Us</a></li>
+                <li><a th:href="@{/contact}">Contact Us</a></li>
+            </ul>
+        </nav>
+        <div class="logout-btn">
+            <!-- Add your logout button here -->
+            <a th:href="@{/login}" class="btn btn-sm btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="text-center">Registered Cars List</h1>
+
+    <!-- Search form -->
+    <form th:action="@{/search-car}" method="post" class="search-form">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Enter Car Id" name="plateNumber" required/>
+            <div class="input-group-append">
+                <button class="book-btn" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <!-- Loop through registered cars and display each card -->
+        <div th:each="car : ${cars}" class="col-md-4">
+            <div class="card car-card">
+                <!-- Displaying the image -->
+                <img th:src="${car.image}" alt="Car Image" class="card-img-top car-image">
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <!-- Display car details -->
+                    <div class="car-details">
+                        <p><strong>Car Id:</strong> <span th:text="${car.id}"></span></p>
+                        <p><strong>Plate Number:</strong> <span th:text="${car.plateNumber}"></span></p>
+                        <p><strong>Model:</strong> <span th:text="${car.model}"></span></p>
+                        <p><strong>Year:</strong> <span th:text="${car.year}"></span></p>
+                        <p><strong>Status:</strong> <span th:text="${car.available}"></span></p>
+                        <p><strong>Customer ID:</strong> <span th:text="${car.customer.id}"></span></p>
+
+                        <div class="rating">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+
+                        <!-- Book button and form -->
+                        <form th:action="@{/rent}" method="post">
+                            <input type="hidden" name="carId" th:value="${car.id}" />
+                            <button class="btn btn-primary book-btn" type="submit">Book</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Show message if no cars are registered -->
+        <div th:if="${#lists.isEmpty(cars)}" class="col-md-12">
+            <p>No Cars registered</p>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy;All rights reserved 2023 Kizigenza Rental car</p>
+        <p><i>don't dream it, drive it</i></p>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.rating .star').click(function () {
+            $(this).addClass('active');
+            $(this).prevAll().addClass('active');
+            $(this).nextAll().removeClass('active');
+        });
+    });
+</script>
+
+</body>
+</html>
